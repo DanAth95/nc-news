@@ -6,6 +6,7 @@ const {
   getArticleById,
   getArticles,
 } = require("./controllers/articles.controller");
+const { getCommentsByArticleId } = require("./controllers/comments.controller");
 
 app.get("/api", (req, res) => {
   res.send({ endpoints });
@@ -14,6 +15,7 @@ app.get("/api", (req, res) => {
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.get("*", (req, res, next) => {
   next({ status: 404, msg: "Not Found" });
