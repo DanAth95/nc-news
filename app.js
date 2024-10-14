@@ -5,6 +5,7 @@ const endpoints = require("./endpoints.json");
 const {
   getArticleById,
   getArticles,
+  patchArticle,
 } = require("./controllers/articles.controller");
 const {
   getCommentsByArticleId,
@@ -22,6 +23,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentToArticle);
+
+app.patch("/api/articles/:article_id", patchArticle);
 
 app.get("*", (req, res, next) => {
   next({ status: 404, msg: "Not Found" });

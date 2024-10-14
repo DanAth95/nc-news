@@ -87,6 +87,58 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Invalid Article ID");
       });
   });
+  test("PATCH 200 responds with the updated article", () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(update)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.updatedArticle[0].votes).toBe(101);
+        expect(response.body.updatedArticle[0].article_id).toBe(1);
+      });
+  });
+  test("PATCH 200 responds with the updated article when votes are decreased", () => {
+    const update = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(update)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.updatedArticle[0].votes).toBe(99);
+        expect(response.body.updatedArticle[0].article_id).toBe(1);
+      });
+  });
+  test("PATCH 404 responds with Article Not Found when passed article_id that doesnt exist", () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/100")
+      .send(update)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article Not Found");
+      });
+  });
+  test("PATCH 400 responds with Invalid Article ID when passed invalid article id", () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/not-valid")
+      .send(update)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article ID");
+      });
+  });
+  test("PATCH 400 responds with Invalid Update when passed update not including inc_votes", () => {
+    const update = { inc: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(update)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Update");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -120,7 +172,7 @@ describe("/api/articles", () => {
   });
 });
 
-describe("/api/articles/:article:id/comments", () => {
+describe("/api/articles/:article_id/comments", () => {
   test("GET 200 responds with all comments for given article id", () => {
     return request(app)
       .get("/api/articles/1/comments")
