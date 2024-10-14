@@ -163,4 +163,61 @@ describe("/api/articles/:article:id/comments", () => {
         expect(response.body.msg).toBe("Invalid Article ID");
       });
   });
+  test("POST 201 responds with posted comment object", () => {
+    const newComment = {
+      body: "Brand New Comment",
+      username: "lurker",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.newComment.author).toBe("lurker");
+        expect(response.body.newComment.body).toBe("Brand New Comment");
+        expect(typeof response.body.newComment.comment_id).toBe("number");
+        expect(response.body.newComment.votes).toBe(0);
+        expect(typeof response.body.newComment.created_at).toBe("string");
+        expect(response.body.newComment.article_id).toBe(1);
+      });
+  });
+  test("POST 400 responds with error if newComment isnt valid", () => {
+    const newComment = {
+      message: "Brand New Comment",
+      name: "lurker",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Comment");
+      });
+  });
+  test("POST 404 responds with error if articleID doesnt exist", () => {
+    const newComment = {
+      body: "Brand New Comment",
+      username: "lurker",
+    };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article Not Found");
+      });
+  });
+  test("POST 400 responds with error if articleID isnt valid", () => {
+    const newComment = {
+      body: "Brand New Comment",
+      username: "lurker",
+    };
+    return request(app)
+      .post("/api/articles/not-valid/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article ID");
+      });
+  });
 });
