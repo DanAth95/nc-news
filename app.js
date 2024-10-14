@@ -2,15 +2,18 @@ const express = require("express");
 const { getTopics, getEndpoints } = require("./controllers/topics.controller");
 const app = express();
 const endpoints = require("./endpoints.json");
-const { getArticleById } = require("./controllers/articles.controller");
-
-app.get("/api/topics", getTopics);
+const {
+  getArticleById,
+  getArticles,
+} = require("./controllers/articles.controller");
 
 app.get("/api", (req, res) => {
   res.send({ endpoints });
 });
 
+app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles", getArticles);
 
 app.get("*", (req, res, next) => {
   next({ status: 404, msg: "Not Found" });
