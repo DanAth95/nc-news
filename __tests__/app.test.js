@@ -273,3 +273,25 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("DELETE 404 if passed comment_id that doesnt exist", () => {
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment Not Found");
+      });
+  });
+  test("DELETE 400 if passed comment_id that isnt valid", () => {
+    return request(app)
+      .delete("/api/comments/not-valid")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Comment ID");
+      });
+  });
+});

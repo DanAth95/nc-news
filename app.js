@@ -10,6 +10,7 @@ const {
 const {
   getCommentsByArticleId,
   postCommentToArticle,
+  deleteComment,
 } = require("./controllers/comments.controller");
 
 app.use(express.json());
@@ -26,13 +27,22 @@ app.post("/api/articles/:article_id/comments", postCommentToArticle);
 
 app.patch("/api/articles/:article_id", patchArticle);
 
+app.delete("/api/comments/:comment_id", deleteComment);
+
 app.get("*", (req, res, next) => {
   next({ status: 404, msg: "Not Found" });
 });
 
-app.use((err, req, res, next) => {
+app.use("/api/articles/:article_id", (err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Invalid Article ID" });
+  }
+  next(err);
+});
+
+app.use("/api/comments/:comment_id", (err, req, res, next) => {
+  if (err.code === "22P02") {
+    res.status(400).send({ msg: "Invalid Comment ID" });
   }
   next(err);
 });
