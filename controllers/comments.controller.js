@@ -19,7 +19,6 @@ exports.postCommentToArticle = (req, res, next) => {
   const id = req.params.article_id;
   return createNewComment(comment, id)
     .then((newComment) => {
-      console.log(newComment);
       res.status(201).send({ newComment });
     })
     .catch((err) => {
