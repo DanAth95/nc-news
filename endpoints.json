@@ -55,5 +55,18 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a comment to a given article ID",
+    "exampleResponse": {
+      "newComment": {
+        "comment_id": 19,
+        "body": "Brand New Comment",
+        "article_id": 1,
+        "author": "lurker",
+        "votes": 0,
+        "created_at": "2024-10-14T14:14:49.306Z"
+      }
+    }
   }
 }
