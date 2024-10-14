@@ -79,7 +79,7 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Article Not Found");
       });
   });
-  test("GET 400 responds not found when passed invalid article ID", () => {
+  test("GET 400 responds Invalid Article Id when passed invalid article ID", () => {
     return request(app)
       .get("/api/articles/not-a-valid-id")
       .expect(400)
@@ -116,6 +116,51 @@ describe("/api/articles", () => {
         expect(response.body.articles).toBeSortedBy("created_at", {
           descending: true,
         });
+      });
+  });
+});
+
+describe("/api/articles/:article:id/comments", () => {
+  test("GET 200 responds with all comments for given article id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(11);
+        response.body.comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
+        });
+      });
+  });
+  test("GET 200 comments ordered by created_at descending", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("GET 404 responds Article Not Found when passed valid id that doesnt exist", () => {
+    return request(app)
+      .get("/api/articles/100/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article Not Found");
+      });
+  });
+  test("GET 400 responds Invalid Article Id when passed invalid article ID", () => {
+    return request(app)
+      .get("/api/articles/not-a-valid-id/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article ID");
       });
   });
 });
