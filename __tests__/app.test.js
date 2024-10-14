@@ -108,4 +108,14 @@ describe("/api/articles", () => {
         });
       });
   });
+  test("articles are ordered by date descending", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
 });
