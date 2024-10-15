@@ -52,12 +52,35 @@ exports.fetchArticles = (query) => {
     query.sort_by
   } ${query.order.toUpperCase()}`;
 
-  return db.query(sql, queryVals).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Topic Not Found" });
-    }
-    return rows;
-  });
+  if (!query.limit) {
+    query.limit = 10;
+  }
+
+  if (query.limit) {
+    sql += ` LIMIT ${query.limit}`;
+  }
+
+  if (query.p) {
+    sql += ` OFFSET ${(query.p - 1) * query.limit}`;
+  }
+
+  return db
+    .query(sql, queryVals)
+    .then(({ rows }) => {
+      if (rows.length === 0 && query.topic) {
+        return Promise.reject({ status: 404, msg: "Topic Not Found" });
+      }
+      return Promise.all([
+        rows,
+        db.query(`SELECT COUNT(article_id) AS total_count FROM articles`),
+      ]);
+    })
+    .then(([articles, { rows }]) => {
+      if (articles.length === 0) {
+        return Promise.reject({ status: 404, msg: "Page Not Found" });
+      }
+      return [articles, rows];
+    });
 };
 
 exports.updateArticle = (update, id) => {
