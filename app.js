@@ -57,9 +57,15 @@ app.use("/api/comments/:comment_id", (err, req, res, next) => {
   next(err);
 });
 
-app.use((err, req, res, next) => {
+app.use("/api/articles/:article_id/comments", (err, req, res, next) => {
   if (err.code === "23503") {
     res.status(404).send({ msg: "Article Not Found" });
+  }
+  next(err);
+});
+app.use("/api/articles", (err, req, res, next) => {
+  if (err.code === "23503") {
+    res.status(400).send({ msg: "Invalid Article" });
   }
   next(err);
 });

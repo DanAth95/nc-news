@@ -299,11 +299,11 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("Invalid Article");
       });
   });
-  test("POST 400 when passed newArticle has invalid values for columns", () => {
+  test("POST 400 when passed newArticle has invalid values for foreign key columns", () => {
     const newArticle = {
       title: "Living in the shadow of an even greater man",
-      topic: null,
-      author: null,
+      topic: "not-a-topic",
+      author: "butter_bridge",
       body: "I find this existence even more challenging than before",
       article_img_url: "image.url.com",
     };
