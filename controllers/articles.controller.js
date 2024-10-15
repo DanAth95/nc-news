@@ -16,7 +16,8 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  return fetchArticles()
+  const query = req.query;
+  return fetchArticles(query)
     .then((articles) => {
       res.send({ articles });
     })
