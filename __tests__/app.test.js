@@ -139,6 +139,22 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Invalid Update");
       });
   });
+  test("GET 200, article response now includes comment_count", () => {
+    return request(app)
+      .get("/api/articles/9")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.comment_count).toBe("2");
+      });
+  });
+  test("GET 200, comment_count is 0 when no comments are found", () => {
+    return request(app)
+      .get("/api/articles/10")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.comment_count).toBe("0");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -271,6 +287,14 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Article ID");
+      });
+  });
+  test("GET 200 responds empty array when article exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/10/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments).toHaveLength(0);
       });
   });
   test("POST 201 responds with posted comment object", () => {
