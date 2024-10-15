@@ -96,5 +96,15 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a user by given username",
+    "exampleResponse": {
+      "user": {
+        "name": "do_nothing",
+        "username": "lurker",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
+    }
   }
 }

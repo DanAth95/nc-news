@@ -393,3 +393,26 @@ describe("/api/users", () => {
       });
   });
 });
+
+describe("/api/users/:username", () => {
+  test("GET 200 responds user by given username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.user.username).toBe("lurker");
+        expect(response.body.user.name).toBe("do_nothing");
+        expect(response.body.user.avatar_url).toBe(
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        );
+      });
+  });
+  test("GET 404 responds when username doesnt exist", () => {
+    return request(app)
+      .get("/api/users/not-a-username")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Username Not Found");
+      });
+  });
+});
