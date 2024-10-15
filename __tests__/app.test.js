@@ -376,6 +376,53 @@ describe("/api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Invalid Comment ID");
       });
   });
+  test("PATCH 200 responds with updated comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.updatedComment.comment_id).toBe(1);
+        expect(response.body.updatedComment.votes).toBe(17);
+      });
+  });
+  test("PATCH 200 works for decrease in votes", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -1 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.updatedComment.comment_id).toBe(1);
+        expect(response.body.updatedComment.votes).toBe(15);
+      });
+  });
+  test("PATCH 404 for valid id that doesnt exist", () => {
+    return request(app)
+      .patch("/api/comments/100")
+      .send({ inc_votes: -1 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment Not Found");
+      });
+  });
+  test("PATCH 400 for invalid id", () => {
+    return request(app)
+      .patch("/api/comments/not-valid")
+      .send({ inc_votes: -1 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Comment ID");
+      });
+  });
+  test("PATCH 400 for invalid inc_votes data type", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "not-valid" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Update");
+      });
+  });
 });
 
 describe("/api/users", () => {
