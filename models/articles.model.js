@@ -77,3 +77,34 @@ exports.updateArticle = (update, id) => {
       return rows;
     });
 };
+
+exports.createArticle = (newArticle) => {
+  if (
+    !newArticle.title ||
+    !newArticle.topic ||
+    !newArticle.author ||
+    !newArticle.body
+  ) {
+    return Promise.reject({ status: 400, msg: "Invalid Article" });
+  }
+
+  if (!newArticle.article_img_url) {
+    newArticle.article_img_url = "image.url.com";
+  }
+  const { title, topic, author, body, article_img_url } = newArticle;
+
+  const sql = format(
+    `INSERT INTO articles (title, topic, author, body, article_img_url) VALUES (%L) RETURNING article_id`,
+    [title, topic, author, body, article_img_url]
+  );
+
+  return db
+    .query(sql)
+    .then(({ rows }) => {
+      const id = rows[0].article_id;
+      return this.fetchArticleById(id);
+    })
+    .then((newArticle) => {
+      return newArticle;
+    });
+};
