@@ -170,6 +170,16 @@ describe("/api/articles", () => {
         });
       });
   });
+  // test("articles are ordered by title descending when passed sort_by=title", () => {
+  //   return request(app)
+  //     .get("/api/articles?sort_by=title")
+  //     .expect(200)
+  //     .then((response) => {
+  //       expect(response.body.articles).toBeSortedBy("title", {
+  //         descending: true,
+  //       });
+  //     });
+  // });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -296,7 +306,7 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 
-describe.only("/api/users", () => {
+describe("/api/users", () => {
   test("GET 200 responds with array of all users", () => {
     return request(app)
       .get("/api/users")
