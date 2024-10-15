@@ -198,6 +198,36 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("Invalid Query");
       });
   });
+  test("GET 200 responds with articles of a specified topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(12);
+        response.body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET 200 responds with articles of a specified topic when passed additional queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=title&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(12);
+        response.body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET 404 when passed topic that doesnt exist", () => {
+    return request(app)
+      .get("/api/articles?topic=dogs")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Topic Not Found");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
