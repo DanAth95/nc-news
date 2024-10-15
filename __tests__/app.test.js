@@ -158,12 +158,12 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles", () => {
-  test("GET 200 responds with array of all articles", () => {
+  test("GET 200 responds with array of 10 articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles.length).toBe(13);
+        expect(response.body.articles.length).toBe(10);
         response.body.articles.forEach((article) => {
           expect(typeof article.author).toBe("string");
           expect(typeof article.title).toBe("string");
@@ -219,7 +219,7 @@ describe("/api/articles", () => {
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles.length).toBe(12);
+        expect(response.body.articles.length).toBe(10);
         response.body.articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
@@ -230,7 +230,7 @@ describe("/api/articles", () => {
       .get("/api/articles?topic=mitch&sort_by=title&order=asc")
       .expect(200)
       .then((response) => {
-        expect(response.body.articles.length).toBe(12);
+        expect(response.body.articles.length).toBe(10);
         response.body.articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
@@ -299,7 +299,7 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("Invalid Article");
       });
   });
-  test.only("POST 400 when passed newArticle has invalid values for columns", () => {
+  test("POST 400 when passed newArticle has invalid values for columns", () => {
     const newArticle = {
       title: "Living in the shadow of an even greater man",
       topic: null,
@@ -313,6 +313,53 @@ describe("/api/articles", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Article");
+      });
+  });
+  test("GET 200 responds with array of first 5 articles when passed limit=5", () => {
+    return request(app)
+      .get("/api/articles?limit=5&sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(5);
+        response.body.articles.forEach((article) => {
+          expect(article.article_id <= 5).toBe(true);
+        });
+      });
+  });
+  test("GET 200 responds with array of second 5 articles when passed limit=5&p=2", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2&sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(5);
+        response.body.articles.forEach((article) => {
+          expect(5 < article.article_id).toBe(true);
+          expect(article.article_id <= 10).toBe(true);
+        });
+      });
+  });
+  test("GET 200 response contains total_count property which is equal to total number of articles", () => {
+    return request(app)
+      .get("/api/articles?limit=5&sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.total_count).toBe("13");
+      });
+  });
+  test("GET 200 response when limit > total articles", () => {
+    return request(app)
+      .get("/api/articles?limit=40&sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.total_count).toBe("13");
+      });
+  });
+  test("GET 400 response when page number > total pages", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=4")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Page Not Found");
       });
   });
 });

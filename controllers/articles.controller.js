@@ -19,8 +19,8 @@ exports.getArticleById = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   const query = req.query;
   return fetchArticles(query)
-    .then((articles) => {
-      res.send({ articles });
+    .then(([articles, total_count]) => {
+      res.send({ articles, total_count: total_count[0].total_count });
     })
     .catch((err) => {
       next(err);
