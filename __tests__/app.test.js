@@ -170,16 +170,34 @@ describe("/api/articles", () => {
         });
       });
   });
-  // test("articles are ordered by title descending when passed sort_by=title", () => {
-  //   return request(app)
-  //     .get("/api/articles?sort_by=title")
-  //     .expect(200)
-  //     .then((response) => {
-  //       expect(response.body.articles).toBeSortedBy("title", {
-  //         descending: true,
-  //       });
-  //     });
-  // });
+  test("articles are ordered by title descending when passed sort_by=title", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("title", {
+          descending: true,
+        });
+      });
+  });
+  test("articles are ordered by id ascending when passed sort_by=article_id&order=asc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles).toBeSortedBy("article_id", {
+          ascending: true,
+        });
+      });
+  });
+  test("GET 400 when passed invalid sport_by criteria", () => {
+    return request(app)
+      .get("/api/articles?sort_by=not-valid&order=asc")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Query");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
