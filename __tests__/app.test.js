@@ -244,6 +244,77 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("Topic Not Found");
       });
   });
+  test("POST 201 when passed article object", () => {
+    const newArticle = {
+      title: "Living in the shadow of an even greater man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence even more challenging than before",
+      article_img_url: "image.url.com",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.newArticle.author).toBe("butter_bridge");
+        expect(response.body.newArticle.title).toBe(
+          "Living in the shadow of an even greater man"
+        );
+        expect(response.body.newArticle.topic).toBe("mitch");
+        expect(response.body.newArticle.body).toBe(
+          "I find this existence even more challenging than before"
+        );
+        expect(response.body.newArticle.article_img_url).toBe("image.url.com");
+        expect(typeof response.body.newArticle.article_id).toBe("number");
+        expect(response.body.newArticle.votes).toBe(0);
+        expect(typeof response.body.newArticle.created_at).toBe("string");
+        expect(response.body.newArticle.comment_count).toBe("0");
+      });
+  });
+  test("POST 201 article_img_url defaults", () => {
+    const newArticle = {
+      title: "Living in the shadow of an even greater man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence even more challenging than before",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.newArticle.article_img_url).toBe("image.url.com");
+      });
+  });
+  test("POST 400 when passed newArticle missing elements", () => {
+    const newArticle = {
+      title: "invalid article",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article");
+      });
+  });
+  test.only("POST 400 when passed newArticle has invalid values for columns", () => {
+    const newArticle = {
+      title: "Living in the shadow of an even greater man",
+      topic: null,
+      author: null,
+      body: "I find this existence even more challenging than before",
+      article_img_url: "image.url.com",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
