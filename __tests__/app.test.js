@@ -170,6 +170,16 @@ describe("/api/articles", () => {
         });
       });
   });
+  // test("articles are ordered by title descending when passed sort_by=title", () => {
+  //   return request(app)
+  //     .get("/api/articles?sort_by=title")
+  //     .expect(200)
+  //     .then((response) => {
+  //       expect(response.body.articles).toBeSortedBy("title", {
+  //         descending: true,
+  //       });
+  //     });
+  // });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -292,6 +302,22 @@ describe("/api/comments/:comment_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Comment ID");
+      });
+  });
+});
+
+describe("/api/users", () => {
+  test("GET 200 responds with array of all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users.length).toBe(4);
+        response.body.users.forEach((user) => {
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+        });
       });
   });
 });
