@@ -194,6 +194,28 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.article.comment_count).toBe("0");
       });
   });
+  test("DELETE 204 deletes article and its respective comments based on id", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+  test("DELETE 204 works for articles with no comments", () => {
+    return request(app).delete("/api/articles/2").expect(204);
+  });
+  test("DELETE 400 for invalid article_id", () => {
+    return request(app)
+      .delete("/api/articles/not-valid")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Article ID");
+      });
+  });
+  test("DELETE 404 for valid article_id but not exists", () => {
+    return request(app)
+      .delete("/api/articles/400")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article Not Found");
+      });
+  });
 });
 
 describe("/api/articles", () => {

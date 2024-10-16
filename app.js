@@ -7,6 +7,7 @@ const {
   getArticles,
   patchArticle,
   postArticle,
+  deleteArticle,
 } = require("./controllers/articles.controller");
 const {
   getCommentsByArticleId,
@@ -39,6 +40,7 @@ app.patch("/api/articles/:article_id", patchArticle);
 app.patch("/api/comments/:comment_id", patchComment);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+app.delete("/api/articles/:article_id", deleteArticle);
 
 app.get("*", (req, res, next) => {
   next({ status: 404, msg: "Not Found" });
