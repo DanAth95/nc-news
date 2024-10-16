@@ -370,7 +370,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then((response) => {
-        expect(response.body.comments.length).toBe(11);
+        expect(response.body.comments.length).toBe(10);
         response.body.comments.forEach((comment) => {
           expect(typeof comment.comment_id).toBe("number");
           expect(typeof comment.votes).toBe("number");
@@ -407,12 +407,12 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Invalid Article ID");
       });
   });
-  test("GET 200 responds empty array when article exists but has no comments", () => {
+  test("GET 200 responds No Comments when article exists but has no comments", () => {
     return request(app)
       .get("/api/articles/10/comments")
       .expect(200)
       .then((response) => {
-        expect(response.body.comments).toHaveLength(0);
+        expect(response.body.msg).toBe("No Comments");
       });
   });
   test("POST 201 responds with posted comment object", () => {
@@ -470,6 +470,53 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid Article ID");
+      });
+  });
+  test("GET 200 responds with first 5 comments when passed limit=5", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(5);
+        response.body.comments.forEach((comment) => {
+          expect(comment.created_at >= "2020-05-15T20:19:00.000Z").toBe(true);
+        });
+      });
+  });
+  test("GET 200 limit defaults to 10", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(10);
+      });
+  });
+  test("GET 200 returns 2nd 5 comments when passed limit=5&p=2", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=2")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(5);
+        response.body.comments.forEach((comment) => {
+          expect(comment.created_at < "2020-05-15T20:19:00.000Z").toBe(true);
+          expect(comment.created_at >= "2020-02-23T12:01:00.000Z").toBe(true);
+        });
+      });
+  });
+  test("GET 200 response when limit > total comments responds with all comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=400")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBe(11);
+      });
+  });
+  test("GET 400 response when page number > total pages", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=5&p=40")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Page Not Found");
       });
   });
 });

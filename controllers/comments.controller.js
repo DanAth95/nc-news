@@ -7,7 +7,8 @@ const {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const id = req.params.article_id;
-  return fetchCommentsByArticleId(id)
+  const query = req.query;
+  return fetchCommentsByArticleId(id, query)
     .then((comments) => {
       res.send({ comments });
     })

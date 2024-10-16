@@ -2,15 +2,29 @@ const db = require("../db/connection");
 const format = require("pg-format");
 const { fetchArticleById } = require("./articles.model");
 
-exports.fetchCommentsByArticleId = (id) => {
+exports.fetchCommentsByArticleId = (id, query) => {
   return fetchArticleById(id)
-    .then(() => {
-      return db.query(
-        `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
-        [id]
-      );
+    .then(({ comment_count }) => {
+      if (comment_count === "0") {
+        return Promise.reject({ status: 200, msg: "No Comments" });
+      }
+      let sql = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`;
+
+      if (!query.limit) {
+        query.limit = 10;
+      }
+
+      if (!query.p) {
+        query.p = 1;
+      }
+
+      sql += ` LIMIT ${query.limit} OFFSET ${(query.p - 1) * query.limit}`;
+      return db.query(sql, [id]);
     })
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 400, msg: "Page Not Found" });
+      }
       return rows;
     });
 };
