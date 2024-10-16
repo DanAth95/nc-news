@@ -34,6 +34,45 @@ describe("/api/topics", () => {
         });
       });
   });
+  test("POST 201 reponds with newly added topic when passed valid topic", () => {
+    const newTopic = {
+      slug: "topic name here",
+      description: "description here",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.newTopic.slug).toBe("topic name here");
+        expect(response.body.newTopic.description).toBe("description here");
+      });
+  });
+  test("POST 400 reponds Invalid Topic when passed invalid topic", () => {
+    const newTopic = {
+      description: "description here",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Topic");
+      });
+  });
+  test("POST 400 reponds Topic Already Exists when passed already created topic", () => {
+    const newTopic = {
+      slug: "mitch",
+      description: "description here",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Topic Already Exists");
+      });
+  });
 });
 
 describe("/api", () => {
