@@ -127,5 +127,14 @@
         "article_id": 9
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "posts a new topic",
+    "exampleResponse": {
+      "newTopic": {
+        "slug": "new topic",
+        "description": "new description"
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTopics, getEndpoints } = require("./controllers/topics.controller");
+const { getTopics, postTopic } = require("./controllers/topics.controller");
 const app = express();
 const endpoints = require("./endpoints.json");
 const {
@@ -33,6 +33,7 @@ app.get("/api/users/:username", getUserByUsername);
 
 app.post("/api/articles/:article_id/comments", postCommentToArticle);
 app.post("/api/articles", postArticle);
+app.post("/api/topics", postTopic);
 
 app.patch("/api/articles/:article_id", patchArticle);
 app.patch("/api/comments/:comment_id", patchComment);
