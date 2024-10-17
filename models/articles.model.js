@@ -95,6 +95,9 @@ exports.updateArticle = (update, id) => {
   if (!update.inc_votes) {
     return Promise.reject({ status: 400, msg: "Invalid Update" });
   }
+  if (typeof update.inc_votes != "number") {
+    return Promise.reject({ status: 400, msg: "Invalid Vote Increment" });
+  }
   const { inc_votes } = update;
   return db
     .query(

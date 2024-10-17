@@ -168,6 +168,16 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Invalid Article ID");
       });
   });
+  test("PATCH 400 responds with Invalid Vote Increment when passed invalid inc_votes", () => {
+    const update = { inc_votes: "dog" };
+    return request(app)
+      .patch("/api/articles/not-valid")
+      .send(update)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid Vote Increment");
+      });
+  });
   test("PATCH 400 responds with Invalid Update when passed update not including inc_votes", () => {
     const update = { inc: 1 };
     return request(app)
