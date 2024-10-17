@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const format = require("pg-format");
+const { fetchTopics } = require("./topics.model");
 
 exports.fetchArticleById = (id) => {
   return db
@@ -64,16 +65,23 @@ exports.fetchArticles = (query) => {
     sql += ` OFFSET ${(query.p - 1) * query.limit}`;
   }
 
-  return db
-    .query(sql, queryVals)
-    .then(({ rows }) => {
-      if (rows.length === 0 && query.topic) {
-        return Promise.reject({ status: 404, msg: "Topic Not Found" });
-      }
-      return Promise.all([
-        rows,
-        db.query(`SELECT COUNT(article_id) AS total_count FROM articles`),
-      ]);
+  return fetchTopics()
+    .then((topics) => {
+      return db.query(sql, queryVals).then(({ rows }) => {
+        const topicsSlugs = topics.map((topic) => {
+          return topic.slug;
+        });
+        if (rows.length === 0 && topicsSlugs.includes(query.topic)) {
+          return Promise.reject({ status: 200, msg: "No Articles" });
+        }
+        if (rows.length === 0 && query.topic) {
+          return Promise.reject({ status: 404, msg: "Topic Not Found" });
+        }
+        return Promise.all([
+          rows,
+          db.query(`SELECT COUNT(article_id) AS total_count FROM articles`),
+        ]);
+      });
     })
     .then(([articles, { rows }]) => {
       if (articles.length === 0) {

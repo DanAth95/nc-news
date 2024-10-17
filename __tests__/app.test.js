@@ -305,6 +305,14 @@ describe("/api/articles", () => {
         expect(response.body.msg).toBe("Topic Not Found");
       });
   });
+  test("GET 200 when passed topic exists but has no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.msg).toBe("No Articles");
+      });
+  });
   test("POST 201 when passed article object", () => {
     const newArticle = {
       title: "Living in the shadow of an even greater man",
