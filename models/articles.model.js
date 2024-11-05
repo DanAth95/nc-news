@@ -50,9 +50,15 @@ exports.fetchArticles = (query) => {
     return Promise.reject({ status: 400, msg: "Invalid Query" });
   }
 
-  sql += ` GROUP BY articles.article_id ORDER BY articles.${
-    query.sort_by
-  } ${query.order.toUpperCase()}`;
+  if (query.sort_by === "comment_count") {
+    sql += ` GROUP BY articles.article_id ORDER BY ${
+      query.sort_by
+    } ${query.order.toUpperCase()}`;
+  } else {
+    sql += ` GROUP BY articles.article_id ORDER BY articles.${
+      query.sort_by
+    } ${query.order.toUpperCase()}`;
+  }
 
   if (!query.limit) {
     query.limit = 10;
