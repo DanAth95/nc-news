@@ -24,6 +24,7 @@ exports.fetchArticles = (query) => {
     "topic",
     "author",
     "votes",
+    "comment_count",
   ];
   const allowedOrder = ["asc", "desc"];
 
