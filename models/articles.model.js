@@ -84,10 +84,13 @@ exports.fetchArticles = (query) => {
         if (rows.length === 0 && query.topic) {
           return Promise.reject({ status: 404, msg: "Topic Not Found" });
         }
-        return Promise.all([
-          rows,
-          db.query(`SELECT COUNT(article_id) AS total_count FROM articles`),
-        ]);
+
+        let newSql = `SELECT COUNT(article_id) AS total_count FROM articles`;
+        if (query.topic) {
+          newSql += ` WHERE topic='${query.topic}'`;
+        }
+
+        return Promise.all([rows, db.query(newSql)]);
       });
     })
     .then(([articles, { rows }]) => {
